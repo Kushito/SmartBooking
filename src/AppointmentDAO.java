@@ -27,6 +27,41 @@ public class AppointmentDAO {
         }
     }
 
+    //Check if an appointment already exists for a given service at a specific date and time
+    public boolean appointmentExists(String serviceName, java.util.Date date) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM appointments WHERE services_name = ? AND appointment_date = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, serviceName);
+            pstmt.setTimestamp(2, new java.sql.Timestamp(date.getTime()));
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking appointment existence: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // End of Appointment in database
+    public void endAppointment(int appointmentId) throws SQLException {
+        String sql = "UPDATE appointments SET status = 'Completed' WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, appointmentId);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Appointment ended successfully.");
+            } else {
+                System.out.println("No appointment found with the given ID.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error ending appointment: " + e.getMessage());
+        }
+    }
+
+
     // Retrieve all appointments from the database
     public List<Appointment> getAllAppointments() throws SQLException {
         List<Appointment> appointments = new ArrayList<>();

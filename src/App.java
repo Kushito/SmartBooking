@@ -51,15 +51,19 @@ public class App {
 
         // New appointment
 
-        /* 
+        
         try{
         Date termin = dateFormat.parse("2024-06-15 10:00:00");
 
         Appointment newAppointment = new Appointment(1,"Coference Room 1", termin, "Scheduled");
-        appointmentDAO.addAppointment(newAppointment);
+            if(appointmentDAO.appointmentExists(newAppointment.getServiceName(), termin)) {
+                System.out.println("Appointment already exists for this service at the specified date and time.");
+            } else {
+                appointmentDAO.addAppointment(newAppointment);
+            }
         } catch (ParseException e) {
-        e.printStackTrace();
+            e.printStackTrace();
         }
-        */
+        
     }
 }
